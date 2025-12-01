@@ -3,7 +3,7 @@
 A simple personal finance tracker built with Next.js, Supabase Auth, Prisma, and PostgreSQL.
 You can track **income & expenses**, see your **balance**, and visualize your financial activity with charts.
 
-🔗 **Live Demo:** [finance-tracker.vercel.app](https://task-tracker-next-chi.vercel.app/)
+🔗 **Live Demo:** [finance-tracker.vercel.app](https://finance-tracker-taupe-three.vercel.app)
 
 ## 🖼️ Screenshot
 
