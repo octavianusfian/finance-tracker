@@ -44,11 +44,11 @@ const LoginForm = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${location.origin}/auth/callback?next=/`,
+          redirectTo: `${window.location.origin}/auth/callback`,
         },
       });
       if (error) return setErr(error.message);
-      // toast.success("Login successful!");
+      // toast.success("Login successful!");  
       // router.push("/");
     } catch (error) {
       console.log(error);
