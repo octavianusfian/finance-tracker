@@ -6,6 +6,7 @@ import { createClientSupabase } from "@/utils/supabase/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { syncUser } from "./actions";
 
 const SignupForm = () => {
   const supabase = createClientSupabase();
@@ -27,6 +28,7 @@ const SignupForm = () => {
         password,
       });
       if (error) return setErr(error.message);
+      await syncUser();
       router.push("/");
     } catch (error) {
       console.log(error);

@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { createServerSupabase } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import DashboardClient from "./DashboardClient";
+import { getMonthlyTransactionUsage } from "@/lib/transactionLimit";
 
 const DashboardPage = async () => {
   const supabase = await createServerSupabase();
@@ -12,6 +13,7 @@ const DashboardPage = async () => {
   }
 
   const userId = data.user.id;
+  const usage = await getMonthlyTransactionUsage(userId);
 
   const [incomeAgg, expenseAgg] = await Promise.all([
     prisma.transaction.aggregate({
@@ -69,6 +71,7 @@ const DashboardPage = async () => {
       chartLabels={chartLabels}
       incomeData={incomeData}
       expenseData={expenseData}
+      usage={usage}
     />
   );
 };

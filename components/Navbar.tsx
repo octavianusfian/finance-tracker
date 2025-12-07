@@ -9,6 +9,11 @@ import { Menu, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { User } from "@supabase/supabase-js";
+import axios from "axios";
+import { Spinner } from "./ui/spinner";
+import { UserDb } from "@/lib/types";
+
+// import type { User as UserDb } from "@prisma/client";
 
 const navLinks = [
   { href: "/", label: "Dashboard" },
@@ -21,14 +26,37 @@ export function Navbar() {
   const pathname = usePathname();
   const supabase = createClientSupabase();
   const [user, setUser] = useState<User | null>(null);
+  const [dbUser, setDbUser] = useState<null | UserDb>(null);
+  const [loadingUpgrade, setLoadingUpgrade] = useState(false);
+  const [loadingNavbar, setLoadingNavbar] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
+      setLoadingNavbar(true);
       const { data } = await supabase.auth.getUser();
       setUser(data.user ?? null);
+
+      const res = await fetch("/api/getUser");
+      const json = await res.json();
+
+      setDbUser(json.user); // contains isPremium, etc.
+      setLoadingNavbar(false);
     };
     fetchUser();
   }, [supabase]);
+
+  const handleUpgrade = async () => {
+    setLoadingUpgrade(true);
+    try {
+      const res = await axios.post("/api/checkout");
+      console.log(res);
+
+      window.location.href = res.data.url;
+    } catch (error) {
+      console.log(error);
+    }
+    setLoadingUpgrade(false);
+  };
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
@@ -84,6 +112,19 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
+          {!dbUser?.isPremium && !loadingNavbar ? (
+            <Button
+              size={"sm"}
+              className="bg-yellow-500 text-white hover:bg-yellow-400"
+              onClick={handleUpgrade}
+              disabled={loadingUpgrade}
+            >
+              {loadingUpgrade && <Spinner />}
+              Upgrade to Premium
+            </Button>
+          ) : (
+            <div></div>
+          )}
         </div>
 
         {/* Desktop Logout Button */}

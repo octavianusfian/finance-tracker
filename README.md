@@ -115,12 +115,79 @@ http://localhost:3000
 
 ---
 
+## 💳 Stripe Payment Flow Diagram
+
+User clicks "Upgrade to Premium"
+                │
+                ▼
+   Client calls /api/checkout
+                │
+                ▼
+ Next.js server creates Stripe Checkout Session
+  (with user's email & supabaseId as metadata)
+                │
+                ▼
+ Stripe returns a sessionId or redirect URL
+                │
+                ▼
+User is redirected to Stripe Checkout
+                │
+                ▼
+     User completes payment
+                │
+                ▼
+ Stripe finalizes PaymentIntent
+                │
+                ▼
+ Stripe triggers webhook → /api/webhook
+                │
+                ▼
+ Next.js validates webhook signature
+                │
+                ▼
+ Prisma upserts user → isPremium = true
+                │
+                ▼
+User is now Premium
+
+---
+
+## ✨ What I Learned
+
+Throughout building this project, I learned how to structure a full-stack Next.js application with authentication, database integration, and payment processing. Key takeaways include:
+
+### 🔐 Supabase Authentication
+
+- Understanding how Supabase manages sessions using browser cookies.
+- Fetching the authenticated user on the server vs. client.
+- Syncing Supabase users with a local Prisma database using upsert.
+
+## 🗄️ Prisma + Database Modeling
+
+- Designing a User table that extends Supabase's auth system.
+- Using findUnique, findFirst, and upsert effectively.
+- Understanding the difference between SSR database queries and API routes.
+
+## 💳 Stripe Payment Integration
+
+- Creating Checkout Sessions for premium subscriptions.
+- Passing metadata to link payments back to users.
+- Handling Stripe webhook events securely to upgrade user accounts.
+- Testing payment flows locally using Stripe CLI.
+
+## 🌐 Webhooks
+
+- Understanding server-to-server communication.
+- Validating webhook signatures using the raw request body.
+- Writing idempotent webhook handlers to avoid duplicate processing.
+
+---
+
 ## 🧩 Future Improvements
 
 - Categories management
 - Multi-currency support
 - Recurring transactions (Automatically generate monthly bills, subscriptions, or salaries)
-
 
 ## 🧑‍💻 Author
 
