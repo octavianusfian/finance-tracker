@@ -7,7 +7,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <Navbar />
 
       {/* Main content container */}
-      <main className="container mx-auto px-10 py-6 flex-1">{children}</main>
+      <main className="container mx-auto px-10 py-6 flex-1 bg-white dark:bg-neutral-900">
+        {children}
+      </main>
     </div>
   );
 }

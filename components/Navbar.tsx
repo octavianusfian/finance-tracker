@@ -12,6 +12,7 @@ import type { User } from "@supabase/supabase-js";
 import axios from "axios";
 import { Spinner } from "./ui/spinner";
 import { UserDb } from "@/lib/types";
+import { ModeToggle } from "./ToggleModeButton";
 
 // import type { User as UserDb } from "@prisma/client";
 
@@ -90,7 +91,7 @@ export function Navbar() {
     (user?.user_metadata?.picture as string | undefined);
 
   return (
-    <nav className="w-full border-b px-10 bg-white/80 backdrop-blur sticky top-0 z-50">
+    <nav className="w-full border-b px-10 bg-white dark:bg-neutral-900 backdrop-blur sticky top-0 z-50">
       <div className="container mx-auto flex items-center justify-between h-16 ">
         {/* Left: Logo */}
         <Link href="/" className="font-bold text-xl">
@@ -129,6 +130,7 @@ export function Navbar() {
 
         {/* Desktop Logout Button */}
         <div className="hidden md:flex items-center gap-3">
+          <ModeToggle />
           {user && (
             <div className="flex items-center gap-2">
               <Avatar className="h-8 w-8">
@@ -154,73 +156,79 @@ export function Navbar() {
         </div>
 
         {/* Mobile Menu */}
-
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="md:hidden">
-              <Menu className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
-
-          <SheetContent
-            side="left"
-            className="w-64 p-3 flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center gap-3 mt-4 mb-6">
-                {user && (
-                  <>
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage src={avatarUrl} alt={user.email ?? "User"} />
-                      <AvatarFallback>{getInitials()}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium">
-                        {user.user_metadata?.full_name ??
-                          user.user_metadata?.name ??
-                          user.email}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {user.email}
-                      </span>
-                    </div>
-                  </>
-                )}
-                {!user && (
-                  <span className="text-sm text-muted-foreground">
-                    Not logged in
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col space-y-4">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`text-lg font-medium ${
-                      pathname === link.href
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-            {/* Mobile Logout Button */}
-            <div className="mt-10">
-              <Button
-                variant="destructive"
-                className="w-full flex items-center gap-2"
-                onClick={handleSignOut}
-              >
-                <LogOut className="h-4 w-4" />
-                Logout
+        <div className="space-x-2 md:hidden">
+          {" "}
+          <ModeToggle />
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
               </Button>
-            </div>
-          </SheetContent>
-        </Sheet>
+            </SheetTrigger>
+
+            <SheetContent
+              side="left"
+              className="w-64 p-3 flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center gap-3 mt-4 mb-6">
+                  {user && (
+                    <>
+                      <Avatar className="h-9 w-9">
+                        <AvatarImage
+                          src={avatarUrl}
+                          alt={user.email ?? "User"}
+                        />
+                        <AvatarFallback>{getInitials()}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium">
+                          {user.user_metadata?.full_name ??
+                            user.user_metadata?.name ??
+                            user.email}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {user.email}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                  {!user && (
+                    <span className="text-sm text-muted-foreground">
+                      Not logged in
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col space-y-4">
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`text-lg font-medium ${
+                        pathname === link.href
+                          ? "text-primary"
+                          : "text-muted-foreground"
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+              {/* Mobile Logout Button */}
+              <div className="mt-10">
+                <Button
+                  variant="destructive"
+                  className="w-full flex items-center gap-2"
+                  onClick={handleSignOut}
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </nav>
   );

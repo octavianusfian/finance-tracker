@@ -3,23 +3,48 @@
 import * as React from "react";
 import { Input } from "@/components/ui/input";
 
-export const NumberInput = React.forwardRef<
-  HTMLInputElement,
-  React.InputHTMLAttributes<HTMLInputElement>
->((props, ref) => {
-  const handleKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const allowed = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
+type Props = React.InputHTMLAttributes<HTMLInputElement> & {
+  onValueChange?: (value: number) => void;
+  value?: number | null;
+};
 
-    if (allowed.includes(e.key)) return;
+export const CurrencyInput = React.forwardRef<HTMLInputElement, Props>(
+  ({ value, onValueChange, ...props }, ref) => {
+    // Format number → Rp 10.000
+    const formatDisplay = (num: number | null | undefined) => {
+      if (num === null || num === undefined) return "";
+      return new Intl.NumberFormat("id-ID").format(num);
+    };
 
-    if (!/^\d$/.test(e.key)) {
-      e.preventDefault();
-    }
-  };
+    // Remove non-digit → parse integer
+    const parseToNumber = (v: string) => {
+      const clean = v.replace(/\D/g, ""); // keep numbers only
+      return clean === "" ? 0 : Number(clean);
+    };
 
-  return (
-    <Input ref={ref} {...props} inputMode="numeric" onKeyDown={handleKey} />
-  );
-});
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const raw = parseToNumber(e.target.value);
 
-NumberInput.displayName = "NumberInput";
+      onValueChange?.(raw); // notify parent with number only
+    };
+
+    return (
+      <div className="relative w-full">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+          Rp
+        </span>
+
+        <Input
+          {...props}
+          ref={ref}
+          value={formatDisplay(value ?? 0)}
+          onChange={handleChange}
+          className="pl-10" // space for "Rp"
+          inputMode="numeric"
+        />
+      </div>
+    );
+  }
+);
+
+CurrencyInput.displayName = "CurrencyInput";

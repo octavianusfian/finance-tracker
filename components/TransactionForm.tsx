@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { NumberInput } from "./NumberInput";
+import { CurrencyInput } from "./NumberInput";
 import DatePicker from "./DatePicker";
 import { Transaction } from "@/lib/types";
 import { Loader2 } from "lucide-react";
@@ -119,11 +119,11 @@ const TransactionForm = ({
                 <FormItem>
                   <FormLabel>Amount</FormLabel>
                   <FormControl>
-                    <NumberInput
+                    <CurrencyInput
                       id="amount"
                       value={field.value}
-                      onChange={(e) => {
-                        field.onChange(Number(e.target.value));
+                      onValueChange={(num) => {
+                        field.onChange(num);
                       }}
                     />
                   </FormControl>

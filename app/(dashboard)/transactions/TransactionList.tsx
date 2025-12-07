@@ -129,7 +129,7 @@ const TransactionList = ({
         </div>
       </div>
 
-      <div className="rounded-md border bg-white">
+      <div className="rounded-md border">
         <Table className="[&_th]:px-4 [&_td]:px-4 [&_th]:py-2 [&_td]:py-2">
           <TableHeader>
             <TableRow>
@@ -156,7 +156,7 @@ const TransactionList = ({
                   <TableCell>{t.category}</TableCell>
                   <TableCell>{t.note}</TableCell>
                   <TableCell className="text-right">
-                    {t.amount.toLocaleString("id-ID")}
+                    Rp {t.amount.toLocaleString("id-ID")}
                   </TableCell>
                   <TableCell className="text-center">
                     <Button

@@ -26,6 +26,7 @@ import axios from "axios";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TransactionProgress } from "@/components/TransactionProgress";
+import { UserDb } from "@/lib/types";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -53,6 +54,24 @@ const DashboardClient = ({
   >([]);
   const [loadingExchangeRates, setLoadingExchangeRates] = useState(true);
   const [errorExchangeRates, setErrorExchangeRates] = useState(false);
+  const [userDb, setUserDb] = useState<UserDb | null>(null);
+  const [loadingUsage, setLoadingUsage] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const res = await axios.get("/api/getUser");
+        console.log(res.data.user);
+
+        setUserDb(res.data.user);
+      } catch (error) {
+        console.log(error);
+      }
+      setLoadingUsage(false);
+    };
+
+    fetchUserData();
+  }, []);
 
   const usdRate = exchangeRates.find((rate) => rate.currency === "IDR");
 
@@ -124,21 +143,25 @@ const DashboardClient = ({
   };
   return (
     <div className="space-y-6">
-      <div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Transaction Limit</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <TransactionProgress count={usage.count} limit={usage.limit} />
-            {usage.remaining === 0 && (
-              <p className="text-xs text-red-500 mt-1">
-                You’ve reached the limit. Upgrade to create more transactions.
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      {loadingUsage ? (
+        <Skeleton className="h-[100px]"></Skeleton>
+      ) : !userDb?.isPremium ? (
+        <div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Transaction Limit</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <TransactionProgress count={usage.count} limit={usage.limit} />
+              {usage.remaining === 0 && (
+                <p className="text-xs text-red-500 mt-1">
+                  You’ve reached the limit. Upgrade to create more transactions.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      ) : null}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader>
@@ -207,7 +230,7 @@ const DashboardClient = ({
                 <ScrollArea className="h-[400px] rounded-md border">
                   <Table>
                     <TableCaption>Exchange Rates</TableCaption>
-                    <TableHeader className="top-0 bg-white z-10 shadow-sm sticky">
+                    <TableHeader className="top-0 z-10 shadow-sm sticky">
                       <TableRow>
                         <TableHead className="w-[100px]">Currency</TableHead>
                         <TableHead>Rate (from USD)</TableHead>
